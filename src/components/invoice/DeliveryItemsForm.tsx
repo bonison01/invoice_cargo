@@ -1,5 +1,8 @@
+import { DeliveryItem, InvoiceData } from "@/pages/Index";
 import { Button } from "@/components/ui/button";
-import { InvoiceData, DeliveryItem } from "@/pages/Index";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 
 interface DeliveryItemsFormProps {
@@ -8,12 +11,25 @@ interface DeliveryItemsFormProps {
 }
 
 export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) => {
+  const generateTrackingId = () => {
+    const timestamp = Date.now().toString().slice(-6);
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `TRK${timestamp}${random}`;
+  };
+
   const addItem = () => {
     const newItem: DeliveryItem = {
       id: Date.now().toString(),
-      description: "",
+      trackingId: generateTrackingId(),
+      itemType: "parcel",
+      weight: 0,
+      weightUnit: "kg",
       quantity: 1,
-      rate: 0,
+      deliveryDate: new Date().toISOString().split('T')[0],
+      deliveryMode: "standard",
+      remarks: "",
+      baseCharge: 0,
+      weightCharge: 0,
       amount: 0,
     };
     updateData('items', [...data.items, newItem]);
@@ -26,11 +42,11 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
   const updateItem = (id: string, field: keyof DeliveryItem, value: any) => {
     const updatedItems = data.items.map(item => {
       if (item.id === id) {
-        const updated = { ...item, [field]: value };
-        if (field === 'quantity' || field === 'rate') {
-          updated.amount = updated.quantity * updated.rate;
+        const updatedItem = { ...item, [field]: value };
+        if (field === 'baseCharge' || field === 'weightCharge') {
+          updatedItem.amount = updatedItem.baseCharge + updatedItem.weightCharge;
         }
-        return updated;
+        return updatedItem;
       }
       return item;
     });
@@ -40,62 +56,150 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
   return (
     <div className="space-y-4">
       {data.items.map((item, index) => (
-        <div key={item.id} className="p-4 border border-border rounded-lg space-y-3 bg-muted/30">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Item {index + 1}</span>
+        <div key={item.id} className="border border-border rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-medium text-sm">Parcel {index + 1}</h3>
             <Button
-              type="button"
               variant="ghost"
               size="sm"
               onClick={() => removeItem(item.id)}
-              className="h-8 w-8 p-0"
+              className="text-destructive hover:text-destructive"
             >
-              <Trash2 className="h-4 w-4 text-destructive" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
           
-          <div>
-            <label className="text-sm font-medium block mb-2">Description</label>
-            <input
-              type="text"
-              value={item.description}
-              onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-              className="w-full px-3 py-2 border border-input rounded-md bg-background"
-              placeholder="Item description"
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Tracking ID</Label>
+              <Input
+                type="text"
+                value={item.trackingId}
+                readOnly
+                className="text-sm bg-muted font-mono"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Item Type</Label>
+              <Select value={item.itemType} onValueChange={(value) => updateItem(item.id, 'itemType', value)}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="document">Document</SelectItem>
+                  <SelectItem value="parcel">Parcel</SelectItem>
+                  <SelectItem value="fragile">Fragile Item</SelectItem>
+                  <SelectItem value="electronics">Electronics</SelectItem>
+                  <SelectItem value="food">Food</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-sm font-medium block mb-2">Quantity</label>
-              <input
+              <Label className="text-xs">Weight</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={item.weight}
+                onChange={(e) => updateItem(item.id, 'weight', parseFloat(e.target.value) || 0)}
+                className="text-sm"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Unit</Label>
+              <Select value={item.weightUnit} onValueChange={(value) => updateItem(item.id, 'weightUnit', value)}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kg">kg</SelectItem>
+                  <SelectItem value="g">g</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Quantity</Label>
+              <Input
                 type="number"
                 min="1"
                 value={item.quantity}
                 onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs">Delivery Date</Label>
+              <Input
+                type="date"
+                value={item.deliveryDate}
+                onChange={(e) => updateItem(item.id, 'deliveryDate', e.target.value)}
+                className="text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Rate (₹)</label>
-              <input
+              <Label className="text-xs">Delivery Mode</Label>
+              <Select value={item.deliveryMode} onValueChange={(value) => updateItem(item.id, 'deliveryMode', value)}>
+                <SelectTrigger className="text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard</SelectItem>
+                  <SelectItem value="express">Express</SelectItem>
+                  <SelectItem value="10-min">10-Min Delivery</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label className="text-xs">Base Charge (₹)</Label>
+              <Input
                 type="number"
                 min="0"
                 step="0.01"
-                value={item.rate}
-                onChange={(e) => updateItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
-                className="w-full px-3 py-2 border border-input rounded-md bg-background"
+                value={item.baseCharge}
+                onChange={(e) => updateItem(item.id, 'baseCharge', parseFloat(e.target.value) || 0)}
+                className="text-sm"
               />
             </div>
             <div>
-              <label className="text-sm font-medium block mb-2">Amount (₹)</label>
-              <input
+              <Label className="text-xs">Weight Charge (₹)</Label>
+              <Input
                 type="number"
-                value={item.amount.toFixed(2)}
-                readOnly
-                className="w-full px-3 py-2 border border-input rounded-md bg-muted"
+                min="0"
+                step="0.01"
+                value={item.weightCharge}
+                onChange={(e) => updateItem(item.id, 'weightCharge', parseFloat(e.target.value) || 0)}
+                className="text-sm"
               />
             </div>
+            <div>
+              <Label className="text-xs">Total (₹)</Label>
+              <Input
+                type="text"
+                value={item.amount.toFixed(2)}
+                readOnly
+                className="text-sm bg-muted font-semibold"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs">Remarks / Notes (Optional)</Label>
+            <Input
+              type="text"
+              value={item.remarks}
+              onChange={(e) => updateItem(item.id, 'remarks', e.target.value)}
+              className="text-sm"
+              placeholder="Any additional notes..."
+            />
           </div>
         </div>
       ))}
@@ -107,7 +211,7 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
         className="w-full gap-2"
       >
         <Plus className="h-4 w-4" />
-        Add Delivery Item
+        Add Parcel
       </Button>
     </div>
   );

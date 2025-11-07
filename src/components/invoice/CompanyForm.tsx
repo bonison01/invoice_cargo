@@ -50,6 +50,16 @@ export const CompanyForm = ({ data, updateData }: CompanyFormProps) => {
           />
         </div>
       </div>
+      <div>
+        <label className="text-sm font-medium block mb-2">GST / Registration Number (Optional)</label>
+        <input
+          type="text"
+          value={data.companyGST}
+          onChange={(e) => updateData('companyGST', e.target.value)}
+          className="w-full px-3 py-2 border border-input rounded-md bg-background"
+          placeholder="GST or Registration Number"
+        />
+      </div>
     </div>
   );
 };

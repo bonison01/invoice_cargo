@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CompanyForm } from "@/components/invoice/CompanyForm";
-import { ClientForm } from "@/components/invoice/ClientForm";
+import { SenderForm } from "@/components/invoice/SenderForm";
+import { ReceiverForm } from "@/components/invoice/ReceiverForm";
 import { DeliveryItemsForm } from "@/components/invoice/DeliveryItemsForm";
+import { PaymentForm } from "@/components/invoice/PaymentForm";
 import { InvoicePreview } from "@/components/invoice/InvoicePreview";
 import { generateInvoicePDF } from "@/utils/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
@@ -12,9 +14,16 @@ import { FileText, Download } from "lucide-react";
 
 export interface DeliveryItem {
   id: string;
-  description: string;
+  trackingId: string;
+  itemType: string;
+  weight: number;
+  weightUnit: string;
   quantity: number;
-  rate: number;
+  deliveryDate: string;
+  deliveryMode: string;
+  remarks: string;
+  baseCharge: number;
+  weightCharge: number;
   amount: number;
 }
 
@@ -23,15 +32,21 @@ export interface InvoiceData {
   companyAddress: string;
   companyPhone: string;
   companyEmail: string;
-  clientName: string;
-  clientAddress: string;
-  clientPhone: string;
-  clientEmail: string;
+  companyGST: string;
+  senderName: string;
+  senderPhone: string;
+  senderAddress: string;
+  receiverName: string;
+  receiverPhone: string;
+  receiverAddress: string;
+  receiverEmail: string;
   items: DeliveryItem[];
   notes: string;
   taxRate: number;
   invoiceNumber: string;
   invoiceDate: string;
+  paymentMode: string;
+  paymentStatus: string;
 }
 
 const Index = () => {
@@ -41,15 +56,21 @@ const Index = () => {
     companyAddress: "Sagolband Sayang Leirak, Sagolband, Imphal, Manipur-795004",
     companyPhone: "8787649928",
     companyEmail: "",
-    clientName: "",
-    clientAddress: "",
-    clientPhone: "",
-    clientEmail: "",
+    companyGST: "",
+    senderName: "",
+    senderPhone: "",
+    senderAddress: "",
+    receiverName: "",
+    receiverPhone: "",
+    receiverAddress: "",
+    receiverEmail: "",
     items: [],
     notes: "",
-    taxRate: 0,
+    taxRate: 18,
     invoiceNumber: `INV-${Date.now()}`,
     invoiceDate: new Date().toISOString().split('T')[0],
+    paymentMode: "cash",
+    paymentStatus: "paid",
   });
 
   const updateInvoiceData = (field: keyof InvoiceData, value: any) => {
@@ -113,59 +134,23 @@ const Index = () => {
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Client Information</h2>
-              <ClientForm data={invoiceData} updateData={updateInvoiceData} />
+              <h2 className="text-xl font-semibold mb-4">Sender Information</h2>
+              <SenderForm data={invoiceData} updateData={updateInvoiceData} />
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Delivery Items</h2>
+              <h2 className="text-xl font-semibold mb-4">Receiver Information</h2>
+              <ReceiverForm data={invoiceData} updateData={updateInvoiceData} />
+            </Card>
+
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Parcel/Delivery Details</h2>
               <DeliveryItemsForm data={invoiceData} updateData={updateInvoiceData} />
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Additional Details</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium block mb-2">Invoice Number</label>
-                  <input
-                    type="text"
-                    value={invoiceData.invoiceNumber}
-                    onChange={(e) => updateInvoiceData('invoiceNumber', e.target.value)}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium block mb-2">Invoice Date</label>
-                  <input
-                    type="date"
-                    value={invoiceData.invoiceDate}
-                    onChange={(e) => updateInvoiceData('invoiceDate', e.target.value)}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium block mb-2">Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={invoiceData.taxRate}
-                    onChange={(e) => updateInvoiceData('taxRate', parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium block mb-2">Notes (Optional)</label>
-                  <textarea
-                    rows={3}
-                    value={invoiceData.notes}
-                    onChange={(e) => updateInvoiceData('notes', e.target.value)}
-                    placeholder="Add any additional notes or terms..."
-                    className="w-full px-3 py-2 border border-input rounded-md bg-background resize-none"
-                  />
-                </div>
-              </div>
+              <h2 className="text-xl font-semibold mb-4">Payment & Invoice Details</h2>
+              <PaymentForm data={invoiceData} updateData={updateInvoiceData} />
             </Card>
           </div>
 
