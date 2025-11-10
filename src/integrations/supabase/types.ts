@@ -14,7 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      delivery_items: {
+        Row: {
+          amount: number
+          base_charge: number
+          created_at: string | null
+          delivery_date: string
+          delivery_mode: string
+          id: string
+          invoice_id: string
+          item_type: string
+          quantity: number
+          remarks: string | null
+          weight: number
+          weight_charge: number
+          weight_unit: string
+        }
+        Insert: {
+          amount?: number
+          base_charge?: number
+          created_at?: string | null
+          delivery_date: string
+          delivery_mode: string
+          id?: string
+          invoice_id: string
+          item_type: string
+          quantity?: number
+          remarks?: string | null
+          weight: number
+          weight_charge?: number
+          weight_unit: string
+        }
+        Update: {
+          amount?: number
+          base_charge?: number
+          created_at?: string | null
+          delivery_date?: string
+          delivery_mode?: string
+          id?: string
+          invoice_id?: string
+          item_type?: string
+          quantity?: number
+          remarks?: string | null
+          weight?: number
+          weight_charge?: number
+          weight_unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          company_address: string
+          company_email: string | null
+          company_gst: string | null
+          company_name: string
+          company_phone: string
+          created_at: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          notes: string | null
+          payment_mode: string
+          payment_status: string
+          receiver_address: string
+          receiver_email: string | null
+          receiver_name: string
+          receiver_phone: string
+          sender_address: string
+          sender_name: string
+          sender_phone: string
+          subtotal: number
+          tax_amount: number
+          tax_rate: number
+          total_amount: number
+          tracking_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_address: string
+          company_email?: string | null
+          company_gst?: string | null
+          company_name: string
+          company_phone: string
+          created_at?: string | null
+          id?: string
+          invoice_date: string
+          invoice_number: string
+          notes?: string | null
+          payment_mode: string
+          payment_status: string
+          receiver_address: string
+          receiver_email?: string | null
+          receiver_name: string
+          receiver_phone: string
+          sender_address: string
+          sender_name: string
+          sender_phone: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total_amount?: number
+          tracking_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_address?: string
+          company_email?: string | null
+          company_gst?: string | null
+          company_name?: string
+          company_phone?: string
+          created_at?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          notes?: string | null
+          payment_mode?: string
+          payment_status?: string
+          receiver_address?: string
+          receiver_email?: string | null
+          receiver_name?: string
+          receiver_phone?: string
+          sender_address?: string
+          sender_name?: string
+          sender_phone?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_rate?: number
+          total_amount?: number
+          tracking_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
