@@ -13,7 +13,7 @@ const generateInvoiceCopy = (
   const pageWidth = doc.internal.pageSize.getWidth();
   let yPosition = startY;
 
-  const primaryColor: [number, number, number] = [59, 130, 246];
+  const primaryColor: [number, number, number] = [34, 139, 34];
   const textColor: [number, number, number] = [0, 0, 0];
   const lightGray: [number, number, number] = [240, 240, 240];
 
@@ -35,6 +35,17 @@ const generateInvoiceCopy = (
   }
 
   yPosition += 35;
+
+  // Tracking ID Box
+  doc.setFillColor(34, 139, 34, 0.1);
+  doc.roundedRect(40, yPosition, pageWidth - 80, 8, 3, 3, 'F');
+  doc.setTextColor(...primaryColor);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Tracking ID: ${data.trackingId}`, pageWidth / 2, yPosition + 5, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+
+  yPosition += 12;
 
   // Copy Type Badge
   doc.setFillColor(...primaryColor);
@@ -92,10 +103,9 @@ const generateInvoiceCopy = (
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7);
-  doc.text('TRACKING ID', 17, yPosition + 4.5);
-  doc.text('ITEM', 50, yPosition + 4.5);
-  doc.text('WEIGHT', 100, yPosition + 4.5);
-  doc.text('MODE', 125, yPosition + 4.5);
+  doc.text('ITEM', 17, yPosition + 4.5);
+  doc.text('WEIGHT', 80, yPosition + 4.5);
+  doc.text('MODE', 120, yPosition + 4.5);
   doc.text('AMOUNT', pageWidth - 17, yPosition + 4.5, { align: 'right' });
 
   yPosition += 9;
@@ -115,17 +125,16 @@ const generateInvoiceCopy = (
         doc.rect(15, yPosition - 2, pageWidth - 30, 7, 'F');
       }
 
-      doc.text(item.trackingId, 17, yPosition + 2);
       doc.setFont('helvetica', 'bold');
-      doc.text(item.itemType, 50, yPosition + 2);
+      doc.text(item.itemType, 17, yPosition + 2);
       doc.setFont('helvetica', 'normal');
       if (item.remarks) {
         doc.setFontSize(6);
-        doc.text(item.remarks.substring(0, 20), 50, yPosition + 5);
+        doc.text(item.remarks.substring(0, 30), 17, yPosition + 5);
         doc.setFontSize(7);
       }
-      doc.text(`${item.weight}${item.weightUnit}`, 100, yPosition + 2);
-      doc.text(item.deliveryMode, 125, yPosition + 2);
+      doc.text(`${item.weight}${item.weightUnit}`, 80, yPosition + 2);
+      doc.text(item.deliveryMode, 120, yPosition + 2);
       doc.setFont('helvetica', 'bold');
       doc.text(`₹${item.amount.toFixed(2)}`, pageWidth - 17, yPosition + 2, { align: 'right' });
       doc.setFont('helvetica', 'normal');

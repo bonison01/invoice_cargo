@@ -11,16 +11,9 @@ interface DeliveryItemsFormProps {
 }
 
 export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) => {
-  const generateTrackingId = () => {
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `TRK${timestamp}${random}`;
-  };
-
   const addItem = () => {
     const newItem: DeliveryItem = {
       id: Date.now().toString(),
-      trackingId: generateTrackingId(),
       itemType: "parcel",
       weight: 0,
       weightUnit: "kg",
@@ -71,15 +64,6 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
           
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs">Tracking ID</Label>
-              <Input
-                type="text"
-                value={item.trackingId}
-                readOnly
-                className="text-sm bg-muted font-mono"
-              />
-            </div>
-            <div>
               <Label className="text-xs">Item Type</Label>
               <Select value={item.itemType} onValueChange={(value) => updateItem(item.id, 'itemType', value)}>
                 <SelectTrigger className="text-sm">
@@ -94,9 +78,19 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label className="text-xs">Quantity</Label>
+              <Input
+                type="number"
+                min="1"
+                value={item.quantity}
+                onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
+                className="text-sm"
+              />
+            </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs">Weight</Label>
               <Input
@@ -119,16 +113,6 @@ export const DeliveryItemsForm = ({ data, updateData }: DeliveryItemsFormProps) 
                   <SelectItem value="g">g</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div>
-              <Label className="text-xs">Quantity</Label>
-              <Input
-                type="number"
-                min="1"
-                value={item.quantity}
-                onChange={(e) => updateItem(item.id, 'quantity', parseInt(e.target.value) || 1)}
-                className="text-sm"
-              />
             </div>
           </div>
 

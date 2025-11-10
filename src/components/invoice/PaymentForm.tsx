@@ -11,8 +11,19 @@ interface PaymentFormProps {
 
 export const PaymentForm = ({ data, updateData }: PaymentFormProps) => {
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="trackingId">Tracking ID</Label>
+          <Input
+            id="trackingId"
+            value={data.trackingId}
+            onChange={(e) => updateData("trackingId", e.target.value)}
+            placeholder="MTG12345678"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="invoiceNumber">Invoice Number</Label>
           <Input

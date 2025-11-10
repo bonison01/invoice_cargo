@@ -32,6 +32,11 @@ const InvoiceCopy = ({
         </div>
       </div>
 
+      {/* Tracking ID */}
+      <div className="mb-4 p-3 bg-primary/10 rounded-lg text-center">
+        <p className="text-sm font-semibold text-primary">Tracking ID: {data.trackingId}</p>
+      </div>
+
       {/* Invoice Info */}
       <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
         <div>
@@ -68,7 +73,6 @@ const InvoiceCopy = ({
         <table className="w-full text-xs">
           <thead>
             <tr className="bg-primary text-primary-foreground">
-              <th className="text-left py-2 px-2">Tracking ID</th>
               <th className="text-left py-2 px-2">Item</th>
               <th className="text-center py-2 px-2">Weight</th>
               <th className="text-center py-2 px-2">Mode</th>
@@ -78,14 +82,13 @@ const InvoiceCopy = ({
           <tbody>
             {data.items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-4 text-muted-foreground">
+                <td colSpan={4} className="text-center py-4 text-muted-foreground">
                   No items added
                 </td>
               </tr>
             ) : (
               data.items.map((item, idx) => (
                 <tr key={item.id} className={idx % 2 === 0 ? 'bg-muted/50' : ''}>
-                  <td className="py-2 px-2 font-mono">{item.trackingId}</td>
                   <td className="py-2 px-2">
                     <div className="font-semibold capitalize">{item.itemType}</div>
                     {item.remarks && <div className="text-muted-foreground text-[10px]">{item.remarks}</div>}
